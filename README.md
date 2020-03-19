@@ -15,7 +15,7 @@
  * 操作系统：CentOS 6+
  * Ansible版本：2.6 + 
  * 部署平台及节点服务器：Rsync 3+
- * MySQL版本：5.1-5.6
+ * MySQL版本：5.1-5.6  #如果用5.7[请查看](https://github.com/welliamcao/OpsManage/issues/18#issuecomment-360701544)
 
 ## OpsManage功能说明
 ![image](https://github.com/welliamcao/OpsManage/blob/master/demo_imgs/opsmanage.png)
@@ -23,12 +23,16 @@
 ## QQ交流群
 ![image](https://github.com/welliamcao/OpsManage/blob/master/demo_imgs/qq_group.png)
 
+## Docker构建OpsManage
+[传送门](https://github.com/welliamcao/OpsManage/wiki/Docker%E6%9E%84%E5%BB%BAOpsManage)
+
 ## 安装环境配置
 一、安装Python
 ```
-# yum install zlib zlib-devel readline-devel sqlite-devel bzip2-devel openssl-devel gdbm-devel libdbi-devel ncurses-libs kernel-devel libxslt-devel libffi-devel python-devel zlib-devel openldap-devel sshpass gcc git -y
-# yum install http://www.percona.com/downloads/percona-release/redhat/0.1-6/percona-release-0.1-6.noarch.rpm
-# yum install Percona-Server-server-56 install Percona-Server-devel-56
+# yum install epel-release -y
+# yum install zlib zlib-devel readline-devel sqlite-devel bzip2-devel openssl-devel gdbm-devel libdbi-devel ncurses-libs kernel-devel libxslt-devel libffi-devel python-devel zlib-devel openldap-devel sshpass gcc git rabbitmq-server supervisor -y
+# yum localinstall http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
+# yum install mysql-community-server mysql-devel -y
 # wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz  #CentOS 7不用安装python2.7
 # tar -xzvf Python-3.6.6.tgz
 # cd Python-3.6.6
@@ -78,7 +82,7 @@ bind 你的服务器ip地址
 character_set_server = utf8
 添加以上字段
 # /etc/init.d/mysqld restart     	#centos 6
-# systemctl start mysql.service 	#centos 7
+# systemctl start mysqld.service 	#centos 7
 # mysql -uroot -p  				#初始密码为空，直接回车就行
 mysql> create database opsmanage DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 mysql> grant all privileges on opsmanage.* to root@'%' identified by 'password';

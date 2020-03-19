@@ -245,7 +245,7 @@ $(document).ready(function() {
 	}	
 	
 	 
-	 $("#project_repertory").change(function(){
+/*	 $("#project_repertory").change(function(){
 		   var project_model = '<select class="form-control" id="project_model" name="project_model" required>' +
 								'<option selected="selected" value="">选择上线版本控制类型</option>' +
 								'<option value="tag" name="project_model">Tag</option>'
@@ -260,7 +260,7 @@ $(document).ready(function() {
 			   $("#repo_type").hide();
 			   $("#project_model").html(project_model + '<option value="branch" name="project_model">Branch</option>')
 		   }
-	});	 
+	});	*/ 
 	
 	var compile_type = 'noncompile';
 	if ($("#project_local_command").length){
@@ -416,19 +416,21 @@ $(document).ready(function() {
 	    	    		        {
 		    	    				targets: [8],
 		    	    				render: function(data, type, row, meta) {
+		    	    				    if (row.project_status == 0) {
+		    	    				        var run = '<button type="button" name="btn-project-run" value="'+ row.id +'" class="btn btn-default disabled" aria-label="Justify"><span class="fa fa-play" aria-hidden="true"></span>' + '</button>'
+		    	    				    } else {
+		    	    				        var run = '<button type="button" name="btn-project-run" value="'+ row.id +'" class="btn btn-default" aria-label="Justify"><a href="/apps/manage/?type=status&id='+ row.id + '"><span class="fa fa-play" aria-hidden="true"></span></a>' + '</button>'
+		    	    				    }
 		    	    					if (row.project_repertory=='git' && row.project_model == 'branch'){
 		    	    						var branch = '<button type="button" name="btn-project-branch" value="'+ row.id +'" class="btn btn-default"  aria-label="Justify"><span class="fa fa-github-alt" aria-hidden="true"></span></button>'
-		    	    					}
-		    	    					else{
+		    	    					} else{
 		    	    						var branch = '<button type="button" name="btn-project-branch" value="'+ row.id +'" class="btn btn-default disabled"  aria-label="Justify"><span class="fa fa-github-alt" aria-hidden="true"></span></button>'
 		    	    					}
-		    	                        return '<div class="btn-group  btn-group-sm">' +	
-			    	                           '<button type="button" name="btn-project-run" value="'+ row.id +'" class="btn btn-default"  aria-label="Justify"><a href="/apps/manage/?type=status&id='+ row.id +'"><span class="fa fa-play" aria-hidden="true"></span></a>' +	
-			    	                           '</button>' +			    	                        
-			    	                           '<button type="button" name="btn-project-edit" value="'+ row.id +'" class="btn btn-default"  aria-label="Justify"><a href="/apps/config/?type=edit&id='+ row.id +'"><span class="fa fa-pencil-square-o" aria-hidden="true"></span></a>' +	
-			    	                           '</button>' + branch +                			    	                           
-			    	                           '<button type="button" name="btn-project-delete" value="'+ row.id +'" class="btn btn-default" aria-label="Justify"><span class="fa fa-trash" aria-hidden="true"></span>' +	
-			    	                           '</button>' +			                            
+		    	                        return '<div class="btn-group  btn-group-sm">' +
+			    	                           run +
+			    	                           '<button type="button" name="btn-project-edit" value="'+ row.id +'" class="btn btn-default"  aria-label="Justify"><a href="/apps/config/?type=edit&id='+ row.id +'"><span class="fa fa-pencil-square-o" aria-hidden="true"></span></a>' + '</button>' +
+			    	                           branch +
+			    	                           '<button type="button" name="btn-project-delete" value="'+ row.id +'" class="btn btn-default" aria-label="Justify"><span class="fa fa-trash" aria-hidden="true"></span>' + '</button>' +
 			    	                           '</div>';
 		    	    				},
 		    	    				"className": "text-center",

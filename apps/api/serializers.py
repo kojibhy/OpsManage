@@ -167,12 +167,23 @@ class ServerSerializer(serializers.ModelSerializer):
         server = Server_Assets.objects.create(**data)  
         return server 
 
+
+class DeployScriptSerializer(serializers.ModelSerializer): 
+    detail = serializers.SerializerMethodField(read_only=True,required=False)
+    class Meta:
+        model =  Deploy_Script
+        fields = ('id','detail') 
+        
+    def get_detail(self,obj):
+        return obj.to_json()  
+
 class DeployPlaybookSerializer(serializers.ModelSerializer): 
+    detail = serializers.SerializerMethodField(read_only=True,required=False)
     class Meta:
         model =  Deploy_Playbook
-        fields = ('id','playbook_name','playbook_desc','playbook_vars',
-                  'playbook_uuid','playbook_file','playbook_auth_group',
-                  'playbook_auth_user')   
+        fields = ('id','detail')   
+    def get_detail(self,obj):
+        return obj.to_json()         
         
 class DeployModelLogsSerializer(serializers.ModelSerializer):
     create_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
@@ -236,13 +247,21 @@ class DataBaseServerSerializer(serializers.ModelSerializer):
     detail = serializers.SerializerMethodField(read_only=True,required=False)
     class Meta:
         model = DataBase_Server_Config
-        fields = ('id','db_env','db_name','db_assets_id',
+        fields = ('id','db_env','db_version','db_assets_id',
                   'db_user','db_port','db_mark','db_type',
                   "db_mode","db_business","db_rw","detail")  
     
     def get_detail(self,obj):
         return obj.to_json()
-            
+
+class DatabaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Database_Detail
+        fields = ('id','db_name','db_size') 
+          
+    def create(self,  validated_data):
+        return Database_Detail.objects.create(db_server=self.context["db_server"], **validated_data)        
+        
         
 class CustomSQLSerializer(serializers.ModelSerializer):
     class Meta:
@@ -259,22 +278,12 @@ class HistroySQLSerializer(serializers.ModelSerializer):
         fields = ('id','exe_sql','exe_user','exec_status','exe_result','db_host','db_name','create_time','db_env','exe_db',"exe_time")        
     
     def get_db_env(self,obj):
-        if obj.exe_db.db_env == 'alpha':
-            return "开发环境"
-        
-        elif obj.exe_db.db_env == 'beta':
-            return "测试环境"
-        
-        elif obj.exe_db.db_env =="ga":
-            return "生产环境"
-        
-        else:
-            return "未知"
+        return obj.exe_db.db_server.dataMap["env"][obj.exe_db.db_server.db_env]
         
         
     def get_db_host(self,obj):
         try:
-            return obj.exe_db.db_assets.server_assets.ip
+            return obj.exe_db.db_server.db_assets.server_assets.ip
         except:
             return "未知"
     
@@ -334,9 +343,11 @@ class CronSerializer(serializers.ModelSerializer):
 class ApschedNodeSerializer(serializers.ModelSerializer):
     ip = serializers.CharField(source='sched_server.server_assets.ip', read_only=True)
     jobs_count = serializers.SerializerMethodField(read_only=True,required=False)
+    create_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    update_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     class  Meta:
         model = Sched_Node
-        fields = ('sched_node','port', 'token','enable','ip','jobs_count')         
+        fields = ('sched_node','port', 'ak', 'sk','enable','ip','jobs_count','create_time', 'update_time')         
 
     def get_jobs_count(self,obj):
         return obj.node_jobs.all().count()      

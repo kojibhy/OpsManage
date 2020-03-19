@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+venv
 migrations*
 upload*
 media*
@@ -12,4 +13,4 @@ media*
 ./logs/opsmanage.log
 .quarantine
 .msyh.ttf
-
+celerybeat.pid

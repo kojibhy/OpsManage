@@ -65,11 +65,16 @@ class AnsibleModel(WebsocketConsumer,AssetsAnsible):
     def run_model(self,request):
         
         sList,resource = self.allowcator(request.get('server_model'), request)
-        
+
         if request.get('deploy_model') == 'custom':
             model_name = request.get('custom_model')
         else:
             model_name = request.get('deploy_model',None)
+
+        if not model_name:
+            self.send("模块不能为空")
+            self.close()
+            return
 
         count = len(sList)
         
@@ -86,13 +91,12 @@ class AnsibleModel(WebsocketConsumer,AssetsAnsible):
             if request.get('server_model') == 'inventory_groups':
                 sList = ",".join(resource.keys())
                 
-            ANS.run_model(host_list=sList,module_name=model_name,module_args=request.get('deploy_args',""))  
-        
+            ANS.run_model(host_list=sList,module_name=model_name,module_args=request.get('deploy_args',""))
+
+            self.send("\n<font color='white'>执行完成，总共{count}台机器，耗时：{time}</font>".format(count=count, time=format_time(int(time.time())-self.stime)))
         else:
             self.send("未选择主机或者您没有主机权限")
-            self.close()
-            
-        self.send("\n<font color='white'>执行完成，总共{count}台机器，耗时：{time}</font>".format(count=count, time=format_time(int(time.time())-self.stime)))
+
         self.close()         
         
     def disconnect(self, close_code):

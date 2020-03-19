@@ -22,12 +22,6 @@ class OrderApply(LoginRequiredMixin,ApplyManage,View):
         return JsonResponse({'msg':"操作成功","code":200,'data':res})            
     
     
-# class OrderConfig(LoginRequiredMixin,View):
-#     login_url = '/login/'
-#     def get(self, request, *args, **kwagrs):
-#         return render(request,'orders/order_config.html',{"user":request.user})  
-    
-    
 class OrderLists(LoginRequiredMixin,View):
     login_url = '/login/'
     def get(self, request, *args, **kwagrs):
@@ -105,7 +99,3 @@ class OrderFileDwonloadHandle(LoginRequiredMixin,OrderFileDownloadManage,View):
             response['Content-Disposition'] = 'attachment; filename="{file_name}'.format(file_name=os.path.basename(filePath))
             return response   
         return JsonResponse({'msg':"文件不存在","code":500,'data':[]})                  
-        
-        
-        
-        

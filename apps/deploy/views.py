@@ -60,25 +60,15 @@ class DeployInventoryGroups(LoginRequiredMixin,View):
         dataList = []                            
         for assets in Assets.objects.all():
             if assets.id in assetsIds:seletcd = 1
-            else:seletcd = 0
-            try:
-                project = Project_Assets.objects.get(id=assets.project).project_name
-            except Exception as ex:
-                project = '未知'
-                logger.warn(msg="查询主机项目信息失败: {ex}".format(ex=str(ex)))  
-            try:
-                service = Service_Assets.objects.get(id=assets.business).service_name
-            except Exception as ex:
-                service = '未知' 
-                logger.warn(msg="查询主机应用信息失败: {ex}".format(ex=str(ex)))             
+            else:seletcd = 0        
             if hasattr(assets,'server_assets'):
                 try:
-                    dataList.append({"id":assets.id,"ip":assets.server_assets.ip,"project":project,"service":service,"seletcd":seletcd})                       
+                    dataList.append({"id":assets.id,"ip":assets.server_assets.ip,"seletcd":seletcd})                       
                 except Exception as ex:
                     logger.warn(msg="id:{assets}, error:{ex}".format(assets=assets.id,ex=ex))                    
             elif hasattr(assets,'network_assets'):
                 try:
-                    dataList.append({"id":assets.id,"ip":assets.network_assets.ip,"project":project,"service":service,"seletcd":seletcd})                       
+                    dataList.append({"id":assets.id,"ip":assets.network_assets.ip,"seletcd":seletcd})                       
                 except Exception as ex:
                     logger.warn(msg="id:{assets}, error:{ex}".format(assets=assets.id,ex=ex))                
         return JsonResponse({'msg':"动态资产组查询成功","code":200,'data':dataList,"vars":json.dumps(inventoryGroups.ext_vars)}) 
@@ -134,7 +124,7 @@ class DeployScripts(LoginRequiredMixin,DeployScript,View):
     def get(self, request, *args, **kwagrs):
         if request.GET.get('sid'):
             return JsonResponse({'msg':"数据获取成功","code":200,'data':self.script(request.GET.get('sid'))})
-        return render(request, 'deploy/deploy_scripts.html',{"user":request.user,"scriptList":self.scriptList()}) 
+        return render(request, 'deploy/deploy_scripts.html',{"user":request.user}) 
     
     @method_decorator_adaptor(permission_required, "deploy.deploy_add_deploy_script","/403/")   
     def post(self, request, *args, **kwagrs):
@@ -163,7 +153,7 @@ class DeployPlaybooks(LoginRequiredMixin,DeployPlaybook,View):
     def get(self, request, *args, **kwagrs):
         if request.GET.get('pid'):
             return JsonResponse({'msg':"数据获取成功","code":200,'data':self.playbook(request.GET.get('pid'))})
-        return render(request, 'deploy/deploy_playbook.html',{"user":request.user,"playbookList":self.playbookList()}) 
+        return render(request, 'deploy/deploy_playbook.html',{"user":request.user}) 
     
     @method_decorator_adaptor(permission_required, "deploy.deploy_add_deploy_playbook","/403/")  
     def post(self, request, *args, **kwagrs):
